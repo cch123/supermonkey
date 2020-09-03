@@ -1,14 +1,14 @@
 package supermonkey
 
 import (
-	"fmt"
 	"os"
-	"os/exec"
 	"reflect"
 	"strconv"
 	"strings"
 	"syscall"
 	"unsafe"
+
+	"github.com/cch123/supermonkey/nm"
 )
 
 var (
@@ -36,24 +36,18 @@ func UnpatchAll() {
 // return a arch dependent full symbol string
 func getSymbolName(pkgName, typeName, methodName string) string {
 	if typeName != "" {
-		return "_" + pkgName + "." + "(" + typeName + ")" + methodName
+		return pkgName + "." + "(" + typeName + ")" + methodName
 	}
 
-	return "_" + pkgName + "." + methodName
+	return pkgName + "." + methodName
 }
 
 func init() {
-	cmd := exec.Command("nm", os.Args[0])
-	contentBytes, err := cmd.Output()
-	if err != nil {
-		fmt.Println("this lib depend on nm cmd, please install nm(binutils) first")
-		os.Exit(1)
-	}
-
-	content := string(contentBytes)
+	content, _ := nm.Parse(os.Args[0])
 
 	lines := strings.Split(content, "\n")
 	for _, line := range lines {
+		line := strings.TrimSpace(line)
 		arr := strings.Split(line, " ")
 		if len(arr) < 3 {
 			continue
