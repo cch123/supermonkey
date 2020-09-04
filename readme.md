@@ -10,6 +10,8 @@ Patch all functions including which are unexported
 
 ### patch private function
 
+#### normal
+
 ```go
 package main
 
@@ -43,7 +45,46 @@ func heyHey() {
 
 > go run -gcflags="-l" yourfile.go
 
+#### full symbol name
+
+```go
+package main
+
+import (
+	"fmt"
+
+	sm "github.com/cch123/supermonkey"
+)
+
+func main() {
+	fmt.Println("original function output:")
+	heyHey()
+	fmt.Println()
+
+	sm.PatchByFullSymbolName("main.heyHey", func() {
+		fmt.Println("please be polite")
+	})
+	fmt.Println("after patch, function output:")
+	heyHey()
+	fmt.Println()
+
+	sm.UnpatchAll()
+	fmt.Println("unpatch all, then output:")
+	heyHey()
+}
+
+//go:noinline
+func heyHey() {
+	fmt.Println("fuck")
+}
+
+```
+
+> go run -gcflags="-l" yourfile.go
+
 ### patch private instance method
+
+#### normal
 
 ```go
 package main
@@ -78,6 +119,44 @@ func main() {
 	p.speak()
 }
 
+```
+
+> go run -gcflags="-l" yourfile.go
+
+#### full symbol name
+
+```go
+package main
+
+import (
+	"fmt"
+
+	sm "github.com/cch123/supermonkey"
+)
+
+type person struct{ name string }
+
+func (p *person) speak() {
+	fmt.Println("my name is ", p.name)
+}
+
+func main() {
+	var p = person{"Xargin"}
+	fmt.Println("original function output:")
+	p.speak()
+	fmt.Println()
+
+	sm.PatchByFullSymbolName("main.(*person).speak", func() {
+		fmt.Println("we are all the same")
+	})
+	fmt.Println("after patch, function output:")
+	p.speak()
+	fmt.Println()
+
+	sm.UnpatchAll()
+	fmt.Println("unpatch all, then output:")
+	p.speak()
+}
 ```
 
 > go run -gcflags="-l" yourfile.go

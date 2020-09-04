@@ -20,6 +20,11 @@ var (
 func Patch(pkgName, typeName, methodName string, patchFunc interface{}) {
 	// find addr of the func
 	symbolName := getSymbolName(pkgName, typeName, methodName)
+	PatchByFullSymbolName(symbolName, patchFunc)
+}
+
+// PatchByFullSymbolName needs user to provide the full symbol path
+func PatchByFullSymbolName(symbolName string, patchFunc interface{}) {
 	addr := symbolTable[symbolName]
 	originalBytes := replaceFunction(addr, (uintptr)(getPtr(reflect.ValueOf(patchFunc))))
 	patchRecord[addr] = originalBytes
