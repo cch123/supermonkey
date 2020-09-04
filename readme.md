@@ -1,5 +1,7 @@
 # SuperMonkey
 
+This lib is inspired by https://github.com/bouk/monkey, and uses some of the code
+
 ## Introduction
 
 Patch all functions without limits, including which are unexported
