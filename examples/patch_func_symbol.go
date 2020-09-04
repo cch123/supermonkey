@@ -25,5 +25,5 @@ func main() {
 
 //go:noinline
 func heyHey() {
-	fmt.Println("fuck")
+	fmt.Println("fake")
 }

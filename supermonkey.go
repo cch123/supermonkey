@@ -1,6 +1,7 @@
 package supermonkey
 
 import (
+	"fmt"
 	"os"
 	"reflect"
 	"strconv"
@@ -25,6 +26,12 @@ func Patch(pkgName, typeName, methodName string, patchFunc interface{}) {
 // PatchByFullSymbolName needs user to provide the full symbol path
 func PatchByFullSymbolName(symbolName string, patchFunc interface{}) {
 	addr := symbolTable[symbolName]
+	if addr == 0 {
+		fmt.Printf("The symbol is %v, and the patch target addr is 0, there may be 2 possible reasons\n", symbolName)
+		fmt.Println("	1. the function is inlined, please add //go:noinline to function comment or add -l to gcflags")
+		fmt.Println("	2. your input for symbolName or pkg/obj/method is wrong, check by using go tool nm {your_bin_file}")
+		panic("")
+	}
 	originalBytes := replaceFunction(addr, (uintptr)(getPtr(reflect.ValueOf(patchFunc))))
 	patchRecord[addr] = originalBytes
 }

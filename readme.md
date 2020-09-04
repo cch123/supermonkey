@@ -1,12 +1,10 @@
 # SuperMonkey
 
-This lib is not production ready, please don't use
-
 ## Introduction
 
-Patch all functions including which are unexported
+Patch all functions without limits, including which are unexported
 
-**Warning** : please add -l to your gcflags, or it will panic.
+**Warning** : please add -l to your gcflags or add `//go:noinline` to func which you want to patch.
 
 ### patch private function
 
@@ -23,7 +21,7 @@ import (
 
 func main() {
 	fmt.Println("original function output:")
-	heyHey() // fuck
+	heyHey() // fake
 	fmt.Println()
 
 	sm.Patch("main", "", "heyHey", func() {
@@ -35,11 +33,11 @@ func main() {
 
 	sm.UnpatchAll()
 	fmt.Println("unpatch all, then output:")
-	heyHey() // fuck
+	heyHey() // fake
 }
 
 func heyHey() {
-	fmt.Println("fuck")
+	fmt.Println("fake")
 }
 ```
 
@@ -75,7 +73,7 @@ func main() {
 
 //go:noinline
 func heyHey() {
-	fmt.Println("fuck")
+	fmt.Println("fake")
 }
 
 ```
