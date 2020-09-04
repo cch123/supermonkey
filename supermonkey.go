@@ -36,7 +36,7 @@ func UnpatchAll() {
 // return a arch dependent full symbol string
 func getSymbolName(pkgName, typeName, methodName string) string {
 	if typeName != "" {
-		return pkgName + "." + "(" + typeName + ")" + methodName
+		return pkgName + "." + "(" + typeName + ")" + "." + methodName
 	}
 
 	return pkgName + "." + methodName
