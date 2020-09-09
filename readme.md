@@ -8,15 +8,12 @@ Patch all functions without limits, including which are unexported
 
 **Warning** : please add -l to your gcflags or add `//go:noinline` to func which you want to patch.
 
-## when running in tests
 
-On MacOS:
+## when running in tests
 
 you should run this lib under a go mod project and provide the full project path
 
-On Linux:
-
-go test on linux will not embbed the symbol table to the test executable, so you need to use `go test -c` to generate a test binary, and the run that binary.
+**Warning** : use `go test -ldflags="-s=false" -gcflags="-l"` to enable symbol table and disable inline.
 
 ## when running not in tests
 
