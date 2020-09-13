@@ -11,7 +11,7 @@ package goobj
 import (
 	"bufio"
 	"bytes"
-	"github.com/cch123/supermonkey/objabi"
+	"github.com/cch123/supermonkey/internal/objabi"
 	"errors"
 	"fmt"
 	"io"

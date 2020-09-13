@@ -3,54 +3,41 @@ package supermonkey
 import (
 	"fmt"
 	"os"
-	"reflect"
 	"strconv"
 	"strings"
 	"unsafe"
 
-	"github.com/cch123/supermonkey/nm"
+	"github.com/cch123/supermonkey/internal/bouk"
+	"github.com/cch123/supermonkey/internal/nm"
 )
 
+type PatchGuard = bouk.PatchGuard
+
 var (
-	patchRecord = map[uintptr][]byte{}
 	symbolTable = map[string]uintptr{}
 )
 
-// Patch patches a function
-func Patch(pkgName, typeName, methodName string, patchFunc interface{}) {
-	// find addr of the func
-	symbolName := getSymbolName(pkgName, typeName, methodName)
-	PatchByFullSymbolName(symbolName, patchFunc)
+// Patch replaces a function with another
+func Patch(target, replacement interface{}) *PatchGuard {
+	return bouk.Patch(target, replacement)
 }
 
 // PatchByFullSymbolName needs user to provide the full symbol path
-func PatchByFullSymbolName(symbolName string, patchFunc interface{}) {
+func PatchByFullSymbolName(symbolName string, patchFunc interface{}) *PatchGuard {
 	addr := symbolTable[symbolName]
 	if addr == 0 {
 		fmt.Printf("The symbol is %v, and the patch target addr is 0, there may be 2 possible reasons\n", symbolName)
 		fmt.Println("	1. the function is inlined, please add //go:noinline to function comment or add -l to gcflags")
 		fmt.Println("	2. your input for symbolName or pkg/obj/method is wrong, check by using go tool nm {your_bin_file}")
+		similarSymbols(symbolName)
 		panic("")
 	}
-	originalBytes := replaceFunction(addr, (uintptr)(getPtr(reflect.ValueOf(patchFunc))))
-	patchRecord[addr] = originalBytes
+	return bouk.PatchSymbol(unsafe.Pointer(addr), patchFunc)
 }
 
 // UnpatchAll unpatches all functions
 func UnpatchAll() {
-	for funcAddr, funcBytes := range patchRecord {
-		copyToLocation(funcAddr, funcBytes)
-		delete(patchRecord, funcAddr)
-	}
-}
-
-// return a arch dependent full symbol string
-func getSymbolName(pkgName, typeName, methodName string) string {
-	if typeName != "" {
-		return pkgName + "." + "(" + typeName + ")" + "." + methodName
-	}
-
-	return pkgName + "." + methodName
+	bouk.UnpatchAll()
 }
 
 func init() {
@@ -70,11 +57,23 @@ func init() {
 	}
 }
 
-type value struct {
-	_   uintptr
-	ptr unsafe.Pointer
-}
+// Finds similar symbols
+func similarSymbols(symbolName string) {
+	similarList := make([]string, 0)
+	for s, _ := range symbolTable {
+		if strings.Contains(s, symbolName) {
+			similarList = append(similarList, s)
+		}
+	}
 
-func getPtr(v reflect.Value) unsafe.Pointer {
-	return (*value)(unsafe.Pointer(&v)).ptr
+	if len(similarList) == 0 {
+		return
+	}
+
+	if len(similarList) == 1 {
+		fmt.Println("The most similar symbol is")
+	} else if len(similarList) > 1 {
+		fmt.Println("The most similar symbols are")
+	}
+	fmt.Println(strings.Join(similarList, "\n"))
 }

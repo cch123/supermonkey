@@ -7,7 +7,7 @@ package objfile
 import (
 	"bufio"
 	"bytes"
-	"github.com/cch123/supermonkey/src"
+	"github.com/cch123/supermonkey/internal/src"
 	"container/list"
 	"debug/gosym"
 	"encoding/binary"

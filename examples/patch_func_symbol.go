@@ -6,24 +6,22 @@ import (
 	sm "github.com/cch123/supermonkey"
 )
 
-func main() {
+func patchFuncSymbol() {
 	fmt.Println("original function output:")
-	heyHey()
-	fmt.Println()
+	heyHeyHey()
 
-	sm.PatchByFullSymbolName("main.heyHey", func() {
+	patchGuard := sm.PatchByFullSymbolName("main.heyHeyHey", func() {
 		fmt.Println("please be polite")
 	})
 	fmt.Println("after patch, function output:")
-	heyHey()
-	fmt.Println()
+	heyHeyHey()
 
-	sm.UnpatchAll()
-	fmt.Println("unpatch all, then output:")
-	heyHey()
+	patchGuard.Unpatch()
+	fmt.Println("unpatch, then output:")
+	heyHeyHey()
 }
 
 //go:noinline
-func heyHey() {
+func heyHeyHey() {
 	fmt.Println("fake")
 }

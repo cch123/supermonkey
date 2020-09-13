@@ -1,7 +1,7 @@
-package supermonkey
+package bouk
 
 // Assembles a jump to a function value
-func jmpToFunctionValue(to uintptr) []byte {
+func JmpToFunctionValue(to uintptr) []byte {
 	return []byte{
 		0x48, 0xBA,
 		byte(to),

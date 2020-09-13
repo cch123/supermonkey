@@ -2,30 +2,24 @@ package main
 
 import (
 	"fmt"
+	"unsafe"
 
 	sm "github.com/cch123/supermonkey"
 )
 
-type person struct{ name string }
-
-func (p *person) speak() {
-	fmt.Println("my name is ", p.name)
-}
-
-func main() {
-	var p = person{"Xargin"}
+func patchInstanceFuncSymbol() {
+	p := &person{"Linda"}
 	fmt.Println("original function output:")
 	p.speak()
-	fmt.Println()
 
-	sm.PatchByFullSymbolName("main.(*person).speak", func() {
-		fmt.Println("we are all the same")
+	patchGuard := sm.PatchByFullSymbolName("main.(*person).speak", func(ptr uintptr) {
+		p = (*person)(unsafe.Pointer(ptr))
+		fmt.Println(p.name, ", we are all the same")
 	})
 	fmt.Println("after patch, function output:")
 	p.speak()
-	fmt.Println()
 
-	sm.UnpatchAll()
-	fmt.Println("unpatch all, then output:")
+	patchGuard.Unpatch()
+	fmt.Println("unpatch, then output:")
 	p.speak()
 }

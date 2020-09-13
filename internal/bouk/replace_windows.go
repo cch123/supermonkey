@@ -1,4 +1,4 @@
-package supermonkey
+package bouk
 
 import (
 	"syscall"
@@ -24,7 +24,7 @@ func virtualProtect(lpAddress uintptr, dwSize int, flNewProtect uint32, lpflOldP
 // this function is super unsafe
 // aww yeah
 // It copies a slice to a raw memory location, disabling all memory protection before doing so.
-func copyToLocation(location uintptr, data []byte) {
+func CopyToLocation(location uintptr, data []byte) {
 	f := rawMemoryAccess(location, len(data))
 
 	var oldPerms uint32

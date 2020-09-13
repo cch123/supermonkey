@@ -9,7 +9,7 @@ package objfile
 import (
 	"debug/dwarf"
 	"fmt"
-	"github.com/cch123/supermonkey/xcoff"
+	"github.com/cch123/supermonkey/internal/xcoff"
 	"io"
 	"unicode"
 )

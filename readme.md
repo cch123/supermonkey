@@ -32,21 +32,20 @@ import (
 
 func main() {
 	fmt.Println("original function output:")
-	heyHey() // fake
-	fmt.Println()
+	heyHey()
 
-	sm.Patch("main", "", "heyHey", func() {
+	patchGuard := sm.Patch(heyHey, func() {
 		fmt.Println("please be polite")
 	})
 	fmt.Println("after patch, function output:")
-	heyHey() // please be polite
-	fmt.Println()
+	heyHey()
 
-	sm.UnpatchAll()
-	fmt.Println("unpatch all, then output:")
-	heyHey() // fake
+	patchGuard.Unpatch()
+	fmt.Println("unpatch, then output:")
+	heyHey()
 }
 
+//go:noinline
 func heyHey() {
 	fmt.Println("fake")
 }
@@ -67,26 +66,23 @@ import (
 
 func main() {
 	fmt.Println("original function output:")
-	heyHey()
-	fmt.Println()
+	heyHeyHey()
 
-	sm.PatchByFullSymbolName("main.heyHey", func() {
+	patchGuard := sm.PatchByFullSymbolName("main.heyHeyHey", func() {
 		fmt.Println("please be polite")
 	})
 	fmt.Println("after patch, function output:")
-	heyHey()
-	fmt.Println()
+	heyHeyHey()
 
-	sm.UnpatchAll()
-	fmt.Println("unpatch all, then output:")
-	heyHey()
+	patchGuard.Unpatch()
+	fmt.Println("unpatch, then output:")
+	heyHeyHey()
 }
 
 //go:noinline
-func heyHey() {
+func heyHeyHey() {
 	fmt.Println("fake")
 }
-
 ```
 
 > go run -gcflags="-l" yourfile.go
@@ -106,28 +102,26 @@ import (
 
 type person struct{ name string }
 
+//go:noinline
 func (p *person) speak() {
 	fmt.Println("my name is ", p.name)
 }
 
 func main() {
-	var p = person{"Xargin"}
+	var p = person{"Lance"}
 	fmt.Println("original function output:")
 	p.speak()
-	fmt.Println()
 
-	sm.Patch("main", "*person", "speak", func() {
-		fmt.Println("we are all the same")
-	})
-	fmt.Println("after patch, function output:")
-	p.speak()
-	fmt.Println()
+	patchGuard := sm.Patch((*person).speak, func(*person) {
+        fmt.Println("we are all the same")
+    })
+    fmt.Println("after patch, function output:")
+    p.speak()
 
-	sm.UnpatchAll()
-	fmt.Println("unpatch all, then output:")
+	patchGuard.Unpatch()
+	fmt.Println("unpatch, then output:")
 	p.speak()
 }
-
 ```
 
 > go run -gcflags="-l" yourfile.go
@@ -139,31 +133,32 @@ package main
 
 import (
 	"fmt"
+	"unsafe"
 
 	sm "github.com/cch123/supermonkey"
 )
 
 type person struct{ name string }
 
+//go:noinline
 func (p *person) speak() {
 	fmt.Println("my name is ", p.name)
 }
 
 func main() {
-	var p = person{"Xargin"}
+	var p = person{"Linda"}
 	fmt.Println("original function output:")
 	p.speak()
-	fmt.Println()
 
-	sm.PatchByFullSymbolName("main.(*person).speak", func() {
-		fmt.Println("we are all the same")
+	patchGuard := sm.PatchByFullSymbolName("main.(*person).speak", func(ptr uintptr) {
+		p = (*person)(unsafe.Pointer(ptr))
+		fmt.Println(p.name, ", we are all the same")
 	})
 	fmt.Println("after patch, function output:")
 	p.speak()
-	fmt.Println()
 
-	sm.UnpatchAll()
-	fmt.Println("unpatch all, then output:")
+	patchGuard.Unpatch()
+	fmt.Println("unpatch, then output:")
 	p.speak()
 }
 ```

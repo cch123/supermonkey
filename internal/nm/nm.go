@@ -12,7 +12,7 @@ import (
 	"log"
 	"sort"
 
-	"github.com/cch123/supermonkey/objfile"
+	"github.com/cch123/supermonkey/internal/objfile"
 )
 
 var (
