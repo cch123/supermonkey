@@ -8,24 +8,23 @@ import (
 
 type person struct{ name string }
 
+//go:noinline
 func (p *person) speak() {
 	fmt.Println("my name is ", p.name)
 }
 
-func main() {
-	var p = person{"Xargin"}
+func patchInstanceFunc() {
+	p := &person{"Lance"}
 	fmt.Println("original function output:")
 	p.speak()
-	fmt.Println()
 
-	sm.Patch("main", "*person", "speak", func() {
+	patchGuard := sm.Patch((*person).speak, func(*person) {
 		fmt.Println("we are all the same")
 	})
 	fmt.Println("after patch, function output:")
 	p.speak()
-	fmt.Println()
 
-	sm.UnpatchAll()
-	fmt.Println("unpatch all, then output:")
+	patchGuard.Unpatch()
+	fmt.Println("unpatch, then output:")
 	p.speak()
 }

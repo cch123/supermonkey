@@ -7,9 +7,9 @@
 package objfile
 
 import (
-	"github.com/cch123/supermonkey/goobj"
-	"github.com/cch123/supermonkey/objabi"
-	"github.com/cch123/supermonkey/sys"
+	"github.com/cch123/supermonkey/internal/goobj"
+	"github.com/cch123/supermonkey/internal/objabi"
+	"github.com/cch123/supermonkey/internal/sys"
 	"debug/dwarf"
 	"debug/gosym"
 	"errors"

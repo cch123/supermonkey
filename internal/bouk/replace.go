@@ -1,4 +1,4 @@
-package supermonkey
+package bouk
 
 import (
 	"reflect"
@@ -20,12 +20,12 @@ func pageStart(ptr uintptr) uintptr {
 
 // from is a pointer to the actual function
 // to is a pointer to a go funcvalue
-func replaceFunction(from, to uintptr) (original []byte) {
-	jumpData := jmpToFunctionValue(to)
+func ReplaceFunction(from, to uintptr) (original []byte) {
+	jumpData := JmpToFunctionValue(to)
 	f := rawMemoryAccess(from, len(jumpData))
 	original = make([]byte, len(f))
 	copy(original, f)
 
-	copyToLocation(from, jumpData)
+	CopyToLocation(from, jumpData)
 	return
 }

@@ -6,20 +6,18 @@ import (
 	sm "github.com/cch123/supermonkey"
 )
 
-func main() {
+func patchFunc() {
 	fmt.Println("original function output:")
 	heyHey()
-	fmt.Println()
 
-	sm.Patch("main", "", "heyHey", func() {
+	patchGuard := sm.Patch(heyHey, func() {
 		fmt.Println("please be polite")
 	})
 	fmt.Println("after patch, function output:")
 	heyHey()
-	fmt.Println()
 
-	sm.UnpatchAll()
-	fmt.Println("unpatch all, then output:")
+	patchGuard.Unpatch()
+	fmt.Println("unpatch, then output:")
 	heyHey()
 }
 
