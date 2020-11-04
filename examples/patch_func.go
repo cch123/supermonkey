@@ -19,6 +19,8 @@ func patchFunc() {
 	patchGuard.Unpatch()
 	fmt.Println("unpatch, then output:")
 	heyHey()
+
+	fmt.Println()
 }
 
 //go:noinline

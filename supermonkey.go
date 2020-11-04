@@ -26,11 +26,12 @@ func Patch(target, replacement interface{}) *PatchGuard {
 func PatchByFullSymbolName(symbolName string, patchFunc interface{}) *PatchGuard {
 	addr := symbolTable[symbolName]
 	if addr == 0 {
-		fmt.Printf("The symbol is %v, and the patch target addr is 0, there may be 2 possible reasons\n", symbolName)
-		fmt.Println("	1. the function is inlined, please add //go:noinline to function comment or add -l to gcflags")
-		fmt.Println("	2. your input for symbolName or pkg/obj/method is wrong, check by using go tool nm {your_bin_file}")
+		prompt := fmt.Sprintf(`The symbol is %v, and the patch target addr is 0, there may be 2 possible reasons:
+  1. the function is inlined, please add //go:noinline to function comment or add -l to gcflags
+  2. your input for symbolName or pkg/obj/method is wrong, check by using go tool nm {your_bin_file} %s`, symbolName, "\n")
+		colorPrint(prompt, green)
 		similarSymbols(symbolName)
-		panic("")
+		os.Exit(1)
 	}
 	return bouk.PatchSymbol(unsafe.Pointer(addr), patchFunc)
 }
@@ -62,7 +63,7 @@ func similarSymbols(symbolName string) {
 	similarList := make([]string, 0)
 	for s, _ := range symbolTable {
 		if strings.Contains(s, symbolName) {
-			similarList = append(similarList, s)
+			similarList = append(similarList, "  - "+s)
 		}
 	}
 
@@ -71,9 +72,18 @@ func similarSymbols(symbolName string) {
 	}
 
 	if len(similarList) == 1 {
-		fmt.Println("The most similar symbol is")
+		colorPrint("The most similar symbol is", red)
 	} else if len(similarList) > 1 {
-		fmt.Println("The most similar symbols are")
+		colorPrint("The most similar symbols are", red)
 	}
-	fmt.Println(strings.Join(similarList, "\n"))
+	colorPrint(strings.Join(similarList, "\n"), red)
+}
+
+const (
+	red   = 31
+	green = 32
+)
+
+func colorPrint(s string, f int) {
+	fmt.Printf("\033[0;%dm%s\033[0m\n", f, s)
 }

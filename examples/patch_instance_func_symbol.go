@@ -22,4 +22,6 @@ func patchInstanceFuncSymbol() {
 	patchGuard.Unpatch()
 	fmt.Println("unpatch, then output:")
 	p.speak()
+
+	fmt.Println()
 }
