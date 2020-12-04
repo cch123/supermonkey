@@ -203,3 +203,10 @@ func main() {
 ```
 
 > go run -gcflags="-l" yourfile.go
+
+## Authors
+
+[cch123](https://github.com/cch123)
+
+[Mutated1994](https://github.com/Mutated1994)
+
