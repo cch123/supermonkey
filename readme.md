@@ -1,5 +1,7 @@
 # SuperMonkey
 
+![gopher](https://user-images.githubusercontent.com/29589055/102566226-0a23b700-411a-11eb-879e-8b58b6a1c8d6.png)
+
 This lib is inspired by https://github.com/bouk/monkey, and uses some of the code
 
 ## Introduction
