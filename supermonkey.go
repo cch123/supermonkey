@@ -3,6 +3,7 @@ package supermonkey
 import (
 	"fmt"
 	"os"
+	"reflect"
 	"strconv"
 	"strings"
 	"unsafe"
@@ -20,6 +21,10 @@ var (
 // Patch replaces a function with another
 func Patch(target, replacement interface{}) *PatchGuard {
 	return bouk.Patch(target, replacement)
+}
+
+func PatchInstanceMethod(target reflect.Type, methodName string, replacement interface{}) *PatchGuard {
+	return bouk.PatchInstanceMethod(target, methodName, replacement)
 }
 
 // PatchByFullSymbolName needs user to provide the full symbol path
