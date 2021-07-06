@@ -24,6 +24,13 @@ func patchStructMethodSymbol() {
 	fmt.Println("unpatch, then output:")
 	fmt.Println(f.MyFunc(nil))
 
+	patchGuard.Restore()
+	fmt.Println("restore, then output:")
+	fmt.Println(f.MyFunc(nil))
+
+	patchGuard.Unpatch()
+	fmt.Println("unpatch, then output:")
+	fmt.Println(f.MyFunc(nil))
+
 	fmt.Println()
 }
-

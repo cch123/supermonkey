@@ -32,6 +32,7 @@ func getPtr(v reflect.Value) unsafe.Pointer {
 type PatchGuard struct {
 	target      reflect.Value
 	replacement reflect.Value
+	isSymbol    bool
 }
 
 func (g *PatchGuard) Unpatch() {
@@ -39,16 +40,16 @@ func (g *PatchGuard) Unpatch() {
 }
 
 func (g *PatchGuard) Restore() {
-	patchValue(g.target, g.replacement)
+	patchValue(g.target, g.replacement, g.isSymbol)
 }
 
 // Patch replaces a function with another
 func Patch(target, replacement interface{}) *PatchGuard {
 	t := reflect.ValueOf(target)
 	r := reflect.ValueOf(replacement)
-	patchValue(t, r)
+	patchValue(t, r, false)
 
-	return &PatchGuard{t, r}
+	return &PatchGuard{t, r, false}
 }
 
 func PatchSymbol(target, replacement interface{}) *PatchGuard {
@@ -56,7 +57,7 @@ func PatchSymbol(target, replacement interface{}) *PatchGuard {
 	r := reflect.ValueOf(replacement)
 	patchSymbolValue(t, r)
 
-	return &PatchGuard{t, r}
+	return &PatchGuard{t, r, true}
 }
 
 // PatchInstanceMethod replaces an instance method methodName for the type target with replacement
@@ -67,16 +68,16 @@ func PatchInstanceMethod(target reflect.Type, methodName string, replacement int
 		panic(fmt.Sprintf("unknown method %s", methodName))
 	}
 	r := reflect.ValueOf(replacement)
-	patchValue(m.Func, r)
+	patchValue(m.Func, r, false)
 
-	return &PatchGuard{m.Func, r}
+	return &PatchGuard{m.Func, r, false}
 }
 
-func patchValue(target, replacement reflect.Value) {
+func patchValue(target, replacement reflect.Value, isSymbol bool) {
 	lock.Lock()
 	defer lock.Unlock()
 
-	if target.Kind() != reflect.Func {
+	if !isSymbol && target.Kind() != reflect.Func {
 		panic("target has to be a Func")
 	}
 
@@ -84,7 +85,7 @@ func patchValue(target, replacement reflect.Value) {
 		panic("replacement has to be a Func")
 	}
 
-	if target.Type() != replacement.Type() {
+	if !isSymbol && target.Type() != replacement.Type() {
 		panic(fmt.Sprintf("target and replacement have to have the same type %s != %s", target.Type(), replacement.Type()))
 	}
 
