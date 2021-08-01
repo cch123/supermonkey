@@ -28,5 +28,13 @@ func patchInstanceFunc() {
 	fmt.Println("unpatch, then output:")
 	p.speak()
 
+	patchGuard.Restore()
+	fmt.Println("restore, then output:")
+	p.speak()
+
+	patchGuard.Unpatch()
+	fmt.Println("unpatch, then output:")
+	p.speak()
+
 	fmt.Println()
 }

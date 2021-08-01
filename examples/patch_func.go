@@ -20,6 +20,14 @@ func patchFunc() {
 	fmt.Println("unpatch, then output:")
 	heyHey()
 
+	patchGuard.Restore()
+	fmt.Println("restore, then output:")
+	heyHey()
+
+	patchGuard.Unpatch()
+	fmt.Println("unpatch, then output:")
+	heyHey()
+
 	fmt.Println()
 }
 
