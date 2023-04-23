@@ -17,6 +17,12 @@ you should run this lib under a go mod project and provide the full project path
 
 **Warning** : use `go test -ldflags="-s=false" -gcflags="-l"` to enable symbol table and disable inline.
 
+```
+2023/04/23 14:01:05 reading /root/tmp/go-build541175936/b001/exe/a: no symbol section
+2023/04/23 14:01:05 reading /root/tmp/go-build541175936/b001/exe/a: no symbols
+```
+if you has this problem, just set `-ldflags="-s=false"`
+
 ## when running not in tests
 
 ### patch private function
