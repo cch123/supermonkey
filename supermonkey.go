@@ -47,7 +47,8 @@ func UnpatchAll() {
 }
 
 func init() {
-	content, _ := nm.Parse(os.Args[0])
+	path, _ := os.Executable()
+	content, _ := nm.Parse(path)
 
 	lines := strings.Split(content, "\n")
 	for _, line := range lines {
